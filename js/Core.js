@@ -69,11 +69,7 @@ export default class Core
         const editableTags = this.container.querySelectorAll(this.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.setAttribute('contenteditable', 'true');
-            DOM.addStyles(editableTag, {
-                borderRadius: '.25rem',
-                border: '1px dashed #CCC',
-                outline: 'none',
-            });
+            DOM.addStyles(editableTag, {boxShadow: 'inset 0px 0px 0px 1px #CCC'});
         });
     }
 
@@ -82,7 +78,7 @@ export default class Core
         const editableTags = this.container.querySelectorAll(this.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.removeAttribute('contenteditable');
-            DOM.removeStyles(editableTag, ['borderRadius','border','outline']);
+            DOM.removeStyles(editableTag, ['boxShadow']);
         });
     }
 }

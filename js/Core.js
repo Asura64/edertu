@@ -1,5 +1,6 @@
 import DOM from "./DOM";
 import Trad from "./Trad";
+import ContentEditable from "./Editable/ContentEditable";
 
 export default class Core
 {
@@ -15,7 +16,7 @@ export default class Core
             lang: 'en'
         }, options);
         this.trad = new Trad(options.lang);
-        this.editableTags = ['h2', 'h3', 'p', 'li'];
+        this.contentEditable = new ContentEditable(this.trad);
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', this.init.bind(this, id));
@@ -66,19 +67,21 @@ export default class Core
 
     enableEditableTags()
     {
-        const editableTags = this.container.querySelectorAll(this.editableTags.join(','));
+        const editableTags = this.container.querySelectorAll(this.contentEditable.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.setAttribute('contenteditable', 'true');
             DOM.addStyles(editableTag, {boxShadow: 'inset 0px 0px 0px 1px #CCC'});
+            this.contentEditable.addEditableEvents(editableTag);
         });
     }
 
     disableEditableTags()
     {
-        const editableTags = this.container.querySelectorAll(this.editableTags.join(','));
+        const editableTags = this.container.querySelectorAll(this.contentEditable.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.removeAttribute('contenteditable');
             DOM.removeStyles(editableTag, ['boxShadow']);
+            this.contentEditable.removeEditableEvents(editableTag);
         });
     }
 }

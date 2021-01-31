@@ -54,10 +54,13 @@ export default class DOM
             const bcr = element.getBoundingClientRect();
             let Xdistance = Math.min(Math.abs(e.pageX - bcr.left), Math.abs(e.pageX - bcr.right));
             let Ydistance = Math.min(Math.abs(e.pageY - bcr.top), Math.abs(e.pageY - bcr.bottom));
+            let hoveringElement =
+                bcr.left <= e.pageX && bcr.right >= e.pageX &&
+                bcr.top <= e.pageY && bcr.bottom >= e.pageY;
             let distance = Math.max(Xdistance, Ydistance);
             let triggerDistance = distance > lastDistance ? 50 : 200;
             lastDistance = distance;
-            element.style.opacity = distance < triggerDistance ? '1' : '0';
+            element.style.opacity = hoveringElement || distance < triggerDistance ? '1' : '0';
         });
     }
 

@@ -69,22 +69,31 @@ export default class DOM
          * @desc Append style tag within <head> if not created yet. This tag is used for advanced CSS styling
          * @return {HTMLElement} Style tag created within <head>
          */
-        getHeadStyle: () => {
-            let headStyle = document.getElementById('edertu-head-style');
+        getStyle: (id) => {
+            let headStyle = document.getElementById(id);
             if (!headStyle) {
                 headStyle = DOM.createElement('style');
-                headStyle.id = 'edertu-head-style';
+                headStyle.id = id;
                 document.querySelector('head').appendChild(headStyle);
             }
             return headStyle;
         },
 
         /**
+         * @desc Check if Headstyle exists
+         * @return {boolean}
+         */
+        hasStyle: (id) => {
+            return !!document.getElementById(id);
+        },
+
+        /**
          * @desc Append new CSS rules to head Styles
          * @param {Object.<string, Object>} cssObject Keypair selector-styles
+         * @param {string} id
          */
-        addStyles : cssObject => {
-            let headStyle = this.HEAD.getHeadStyle();
+        addStyles : (cssObject, id = 'edertu-head-style') => {
+            let headStyle = this.HEAD.getStyle(id);
             let css = '';
             for (const [selector, styles] of Object.entries(cssObject)) {
                 css += selector + '{';

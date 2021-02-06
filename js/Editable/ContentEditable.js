@@ -1,4 +1,5 @@
 import DOM from "../DOM";
+import Popup from "../Popup";
 
 export default class ContentEditable
 {
@@ -153,8 +154,15 @@ export default class ContentEditable
                 this._replaceInSelection('i', 'em');
                 break;
             case 'link':
-                //TODO: create popup to ask user for link url
-                document.execCommand('createLink', false, 'https://developer.mozilla.org/fr/docs/Web/API/Document/execCommand');
+                const urlRegex = new RegExp('^https?://');
+                let isValidUrl = false;
+                let url = '';
+                while (!isValidUrl) {
+                    url = prompt('Entrez une adresse URL:', url);
+                    if (!url) return;
+                    isValidUrl = url.match(urlRegex);
+                }
+                document.execCommand('createLink', false, url);
                 break;
         }
     }

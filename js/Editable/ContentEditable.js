@@ -1,5 +1,4 @@
 import DOM from "../DOM";
-import Popup from "../Popup";
 
 export default class ContentEditable
 {
@@ -9,7 +8,7 @@ export default class ContentEditable
     constructor(trad)
     {
         this.trad = trad;
-        this.editableTags = ['h1', 'h2', 'h3', 'p', 'li'];
+        this.editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li'];
         this.activeEditable = null;
     }
 

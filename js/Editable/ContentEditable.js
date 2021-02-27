@@ -1,15 +1,18 @@
-import DOM from "../DOM";
+import Trad from "../Trad";
+import Controls from "./Controls";
 
-export default class ContentEditable
+export default class ContentEditable extends Controls
 {
     /**
-     * @param {Trad} trad
+     * @param {Object} settings
+     * @param {string} settings.lang
      */
-    constructor(trad)
+    constructor(settings)
     {
-        this.trad = trad;
+        super();
+        this.trad = Trad.get(settings.lang).editable.contentEditable;
         this.editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li'];
-        this.activeEditable = null;
+        this.addControls();
     }
 
     /**
@@ -18,8 +21,8 @@ export default class ContentEditable
      */
     addEditableEvents(element)
     {
-        element._onclick = this._onEditableClick.bind(this, element);
-        element.addEventListener('click', element._onclick);
+        element._onhover = this._onEditableHover.bind(this, element);
+        element.addEventListener('mouseover', element._onhover);
     }
 
     /**
@@ -28,107 +31,42 @@ export default class ContentEditable
      */
     removeEditableEvents(element)
     {
-        element.removeEventListener('click', element._onclick);
-        DOM.addStyles(this._getControls(), {
-            left: 0,
-            top: '-50px'
-        });
+        element.removeEventListener('mouseover', element._onhover);
+        this._hideControls();
     }
 
-    _onEditableClick(element)
+    /**
+     * @desc Adds text edition controls
+     */
+    addControls()
     {
-        this.activeEditable = element;
-        const bcr = element.getBoundingClientRect();
-        let controls = this._getControls();
-        DOM.addStyles(controls, {
-            top: (bcr.top - 26) + 'px',
-            left: bcr.left + 'px',
-        });
+        //Align Left
+        this.addControl('alignLeft', this._onControlClick.bind(this, 'alignLeft'));
+
+        //Align Center
+        this.addControl('alignCenter', this._onControlClick.bind(this, 'alignCenter'));
+
+        //Align Right
+        this.addControl('alignRight', this._onControlClick.bind(this, 'alignRight'));
+
+        //Align Justify
+        this.addControl('alignJustify', this._onControlClick.bind(this, 'alignJustify'));
+
+        //Bold
+        this.addControl('bold', this._onControlClick.bind(this, 'bold'), {fontWeight: 'bold'});
+
+        //Italic
+        this.addControl('italic', this._onControlClick.bind(this, 'italic'), {fontStyle: 'italic'});
+
+        //Link
+        this.addControl('link', this._onControlClick.bind(this, 'link'), {padding: '1px 0'});
     }
 
-
-    _getControls()
-    {
-        let controls = document.getElementById('edertu-contenteditable-controls');
-        if (!controls) {
-            controls = DOM.createElement('div');
-            controls.id = 'edertu-contenteditable-controls';
-            DOM.addStyles(controls, {
-                position: 'absolute',
-                display: 'flex',
-                left: 0,
-                top: '-50px'
-            });
-            DOM.showOnApproch(controls);
-
-            //Align Left
-            const alignLeft = this._createControl('alignLeft');
-            DOM.addStyles(alignLeft, {padding: '0 2px'});
-            controls.appendChild(alignLeft);
-
-            //Align Center
-            const alignCenter = this._createControl('alignCenter');
-            DOM.addStyles(alignCenter, {padding: '0 2px'});
-            controls.appendChild(alignCenter);
-
-            //Align Right
-            const alignRight = this._createControl('alignRight');
-            DOM.addStyles(alignRight, {padding: '0 2px'});
-            controls.appendChild(alignRight);
-
-            //Align Justify
-            const alignJustify = this._createControl('alignJustify');
-            DOM.addStyles(alignJustify, {padding: '0 2px'});
-            controls.appendChild(alignJustify);
-
-            //Bold
-            const bold = this._createControl('bold');
-            DOM.addStyles(bold, {fontWeight: 'bold'});
-            controls.appendChild(bold);
-
-            //Italic
-            const italic = this._createControl('italic');
-            DOM.addStyles(italic, {fontStyle: 'italic'});
-            controls.appendChild(italic);
-
-            //Link
-            const link = this._createControl('link');
-            DOM.addStyles(link, {padding: '1px 0'});
-            controls.appendChild(link);
-
-            const body = document.querySelector('body');
-            body.appendChild(controls);
-        }
-        return controls;
-    }
-
-    _createControl(controlName)
-    {
-        const control = DOM.createElement('button');
-        DOM.addStyles(control, {
-            cursor: 'pointer',
-            width: '26px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 1px'
-        });
-        const symbol = this.trad.control.editable.contentEditable[controlName].symbol;
-        const text = this.trad.control.editable.contentEditable[controlName].text;
-        if (symbol.match('\.(png|jpe?g)$')) {
-            const img = DOM.createElement('img');
-            img.src = symbol;
-            img.alt = text;
-            DOM.addStyles(img, {width: '100%'});
-            control.appendChild(img);
-        } else {
-            control.innerText = symbol;
-        }
-        control.setAttribute('title', text);
-        control.addEventListener('click', this._onControlClick.bind(this, controlName));
-        return control;
-    }
-
+    /**
+     * @desc Assign events by control name
+     * @param {string} controlName
+     * @private
+     */
     _onControlClick(controlName)
     {
         switch (controlName) {
@@ -166,6 +104,12 @@ export default class ContentEditable
         }
     }
 
+    /**
+     * @desc Replace html tag by another in selection (mainly to convert b to strong and i to em)
+     * @param {string} tag
+     * @param {string} replacementTag
+     * @private
+     */
     _replaceInSelection(tag, replacementTag)
     {
         if (window.getSelection) {

@@ -1,3 +1,7 @@
+/**
+ * @callback onClick
+ */
+
 import DOM from "./DOM";
 
 export default class Popup
@@ -29,6 +33,11 @@ export default class Popup
         return this;
     }
 
+    /**
+     * @desc Append title to popup
+     * @param {string} title
+     * @return {Popup}
+     */
     withTitle(title)
     {
         this.title = DOM.createElement('div', 'edertu-popup__heading');
@@ -36,6 +45,11 @@ export default class Popup
         return this;
     }
 
+    /**
+     * @desc Append content to popup
+     * @param {string} content
+     * @return {Popup}
+     */
     withContent(content)
     {
         const contentElt = DOM.createElement('div', 'edertu-popup__content');
@@ -44,6 +58,13 @@ export default class Popup
         return this;
     }
 
+    /**
+     * @desc Append input field to popup
+     * @param {string} id
+     * @param {string} label
+     * @param {string} type
+     * @return {Popup}
+     */
     withField(id, label, type= 'text')
     {
         const inputElt = DOM.createElement('input');
@@ -60,6 +81,12 @@ export default class Popup
         return this;
     }
 
+    /**
+     * @desc Append action button to popup
+     * @param {string} text
+     * @param {onClick} onclick Callback to execute on button click
+     * @return {Popup}
+     */
     withButton(text, onclick)
     {
         this.button = DOM.createElement('button', 'edertu-popup__button');
@@ -68,6 +95,9 @@ export default class Popup
         return this;
     }
 
+    /**
+     * @desc Display popup
+     */
     display()
     {
         if (this.title) this.popupContainer.appendChild(this.title);
@@ -77,11 +107,19 @@ export default class Popup
         if (this.firstField) this.firstField.focus();
     }
 
+    /**
+     * @desc Remove popup
+     */
     destroy()
     {
         this.popup.parentNode.removeChild(this.popup);
     }
 
+    /**
+     * @desc Provides CSS style for popup
+     * @return Object
+     * @private
+     */
     _getHeadStyle()
     {
         return {

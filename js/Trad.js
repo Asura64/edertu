@@ -1,12 +1,6 @@
 export default class Trad
 {
-    constructor(lang = 'en') {
-        const supportedLanguages = ['en', 'fr'];
-        if (supportedLanguages.indexOf(lang) === -1) throw `Language ${lang} not supported. Supported Languages: `+supportedLanguages.join(',');
-        this.lang = lang;
-    }
-
-    get control()
+    static get(lang = 'en')
     {
         const texts = {
             en: {
@@ -40,6 +34,16 @@ export default class Trad
                         link: {
                             text: 'Link',
                             symbol: '🔗',
+                        }
+                    },
+                    imageEditable: {
+                        image: {
+                            text: "Change image",
+                            symbol: "./resources/image-edit.png",
+                        },
+                        alt: {
+                            text: 'Change alt text',
+                            symbol: 'Alt',
                         }
                     }
                 }
@@ -76,11 +80,24 @@ export default class Trad
                             text: 'Lien',
                             symbol: '🔗',
                         }
+                    },
+                    imageEditable: {
+                        image: {
+                            text: "Changer d'image",
+                            symbol: './resources/image-edit.png',
+                        },
+                        alt: {
+                            text: 'Changer le texte alternatif',
+                            symbol: 'Alt',
+                        }
                     }
                 }
             }
         }
 
-        return texts[this.lang];
+        const supportedLanguages = Object.keys(texts);
+        if (supportedLanguages.indexOf(lang) === -1) throw `Language ${lang} not supported. Supported Languages: `+supportedLanguages.join(',');
+
+        return texts[lang];
     }
 }

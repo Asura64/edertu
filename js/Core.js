@@ -1,22 +1,26 @@
 import DOM from "./DOM";
 import Trad from "./Trad";
 import ContentEditable from "./Editable/ContentEditable";
+import ImageEditable from "./Editable/ImageEditable";
 
 export default class Core
 {
     /**
      * @param {string} id
-     * @param {Object} options
-     * @param {string} options.lang
+     * @param {Object} settings
+     * @param {string} settings.imageUpload
+     * @param {string} settings.lang
      */
-    constructor(id, options = {})
+    constructor(id, settings = {})
     {
         this.active = false;
         Object.assign({
+            imageUpload: null,
             lang: 'en'
-        }, options);
-        this.trad = new Trad(options.lang);
-        this.contentEditable = new ContentEditable(this.trad);
+        }, settings);
+        this.trad = Trad.get(settings.lang);
+        this.contentEditable = new ContentEditable(settings);
+        this.imageEditable = new ImageEditable(settings);
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', this.init.bind(this, id));
@@ -35,7 +39,7 @@ export default class Core
         if (!this.container) throw `DOM element with id "${id}" not found`;
         DOM.addStyles(this.container, {position: 'relative'});
         const toggler = DOM.createElement('button');
-        toggler.innerText = this.trad.control.toggle.inactive;
+        toggler.innerText = this.trad.toggle.inactive;
         DOM.addStyles(toggler, {
             position: 'absolute',
             cursor: 'pointer',
@@ -54,34 +58,56 @@ export default class Core
     {
         if (this.active) {
             this.active = false;
-            toggler.innerHTML = this.trad.control.toggle.inactive;
+            toggler.innerHTML = this.trad.toggle.inactive;
             DOM.removeStyles(this.container, ['boxShadow']);
-            this.disableEditableTags();
+            this.disableEditable();
         } else {
             this.active = true;
-            toggler.innerHTML = this.trad.control.toggle.active;
+            toggler.innerHTML = this.trad.toggle.active;
             DOM.addStyles(this.container, {boxShadow: '0 0 3px #CCC'});
-            this.enableEditableTags();
+            this.enableEditable();
         }
     }
 
-    enableEditableTags()
+    /**
+     * @desc Activate editable behaviour and style on editable elements
+     */
+    enableEditable()
     {
+        //contentEditable
         const editableTags = this.container.querySelectorAll(this.contentEditable.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.setAttribute('contenteditable', 'true');
             DOM.addStyles(editableTag, {boxShadow: 'inset 0px 0px 0px 1px #CCC'});
             this.contentEditable.addEditableEvents(editableTag);
         });
+
+        //imageEditable
+        const images = this.container.querySelectorAll('img');
+        [].slice.call(images).forEach(image => {
+            DOM.addStyles(image, {cursor: 'pointer', boxShadow: '3px 3px 3px #CCC'});
+            this.imageEditable.addEditableEvents(image);
+        });
     }
 
-    disableEditableTags()
+    /**
+     * @desc Deactivate editable behaviour and style on editable elements
+     */
+    disableEditable()
     {
+        //contentEditable
         const editableTags = this.container.querySelectorAll(this.contentEditable.editableTags.join(','));
         [].slice.call(editableTags).forEach(editableTag => {
             editableTag.removeAttribute('contenteditable');
             DOM.removeStyles(editableTag, ['boxShadow']);
             this.contentEditable.removeEditableEvents(editableTag);
+        });
+
+        //imageEditable
+        const images = this.container.querySelectorAll('img');
+        [].slice.call(images).forEach(image => {
+            DOM.removeStyles(image, ['cursor', 'boxShadow']);
+            this.imageEditable.removeEditableEvents(image);
         });
     }
 }

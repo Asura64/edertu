@@ -9,13 +9,15 @@ export default class Core
      * @param {string} id
      * @param {Object} settings
      * @param {string} settings.imageUpload
+     * @param {string} settings.imageFolder
      * @param {string} settings.lang
      */
     constructor(id, settings = {})
     {
         this.active = false;
-        Object.assign({
+        settings = Object.assign({
             imageUpload: null,
+            imageFolder: '/',
             lang: 'en'
         }, settings);
         this.trad = Trad.get(settings.lang);

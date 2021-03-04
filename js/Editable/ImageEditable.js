@@ -7,11 +7,13 @@ export default class ImageEditable extends Controls
     /**
      * @param {Object} settings
      * @param {string} settings.imageUpload
+     * @param {string} settings.imageFolder
      * @param {string} settings.lang
      */
     constructor(settings) {
         super();
         this.imageUpload = settings.imageUpload;
+        this.imageFolder = settings.imageFolder;
         this.trad = Trad.get(settings.lang).editable.imageEditable;
         this.addControls();
         const inputFile = DOM.createElement('input');
@@ -65,8 +67,12 @@ export default class ImageEditable extends Controls
      */
     _onControlClick(controlName)
     {
-        //TODO: events by controlName
-        this.inputFile.click();
+        switch (controlName) {
+            case 'image':
+                this.inputFile.click();
+                break;
+            //TODO: event for alt control
+        }
     }
 
     /**
@@ -76,13 +82,35 @@ export default class ImageEditable extends Controls
     _onFileChange()
     {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const image = e.target.result;
-            const fileName = this.inputFile.files[0].name;
+        reader.onload = () => {
+            const formData = new FormData();
+            const file = this.inputFile.files[0];
+            formData.append('upfile', file);
+            formData.append('imageFolder', this.imageFolder);
 
-            //TODO: manage file change
-            console.log(image, fileName, e, this.inputFile);
+            const request = new Request(this.imageUpload, {method: 'POST', body: formData});
+
+            fetch(request)
+                .then(response => response.json())
+                .then(data => this._updateImage(data));
         };
         reader.readAsDataURL(this.inputFile.files[0]);
+    }
+
+    /**
+     * @desc Updates image element
+     * @param {Object} data
+     * @param {boolean} data.success
+     * @param {string} data.url
+     * @param {string} data.alt
+     * @private
+     */
+    _updateImage(data)
+    {
+        if (!data.success) return;
+        if (this.activeEditable instanceof HTMLImageElement) {
+            this.activeEditable.src = data.url;
+            this.activeEditable.alt = data.alt;
+        }
     }
 }

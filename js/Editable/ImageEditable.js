@@ -1,6 +1,7 @@
 import Trad from "../Trad";
 import Controls from "./Controls";
 import DOM from "../DOM";
+import Popup from "../Popup";
 
 export default class ImageEditable extends Controls
 {
@@ -71,7 +72,14 @@ export default class ImageEditable extends Controls
             case 'image':
                 this.inputFile.click();
                 break;
-            //TODO: event for alt control
+            case 'alt':
+                const popup = new Popup();
+                const currentAlt = this.activeEditable instanceof HTMLImageElement ? this.activeEditable.alt : '';
+                popup.withTitle('Texte alternatif')
+                    .withField('change-alt', 'Texte alternatif', 'text', currentAlt)
+                    .withButton('Changer', this._onAltChange.bind(this, popup))
+                    .display();
+                break;
         }
     }
 
@@ -112,5 +120,19 @@ export default class ImageEditable extends Controls
             this.activeEditable.src = data.url;
             this.activeEditable.alt = data.alt;
         }
+    }
+
+    /**
+     * @desc Updates image alt
+     * @param {Popup} popup
+     * @private
+     */
+    _onAltChange(popup)
+    {
+        const altInput = document.getElementById('change-alt');
+        if (altInput.value) {
+            this.activeEditable.alt = altInput.value;
+        }
+        popup.destroy();
     }
 }

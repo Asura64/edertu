@@ -63,14 +63,16 @@ export default class Popup
      * @param {string} id
      * @param {string} label
      * @param {string} type
+     * @param {string} value
      * @return {Popup}
      */
-    withField(id, label, type= 'text')
+    withField(id, label, type= 'text', value = '')
     {
         const inputElt = DOM.createElement('input');
         if (!this.firstField) this.firstField = inputElt;
         inputElt.id = id;
         inputElt.setAttribute('type', type);
+        inputElt.value = value;
         const labelElt = DOM.createElement('label');
         labelElt.innerText = label;
         labelElt.setAttribute('for', id);
@@ -102,7 +104,11 @@ export default class Popup
     {
         if (this.title) this.popupContainer.appendChild(this.title);
         this.content.forEach(content => this.popupContainer.appendChild(content));
-        if (this.button) this.popupContainer.appendChild(this.button);
+        if (this.button) {
+            this.popupContainer.appendChild(this.button);
+            const inputs = [].slice.call(this.popupContainer.querySelectorAll('input'));
+            inputs.forEach(input => input.addEventListener('keyup', e => {if (e.keyCode === 13) this.button.click()}));
+        }
         document.querySelector('body').appendChild(this.popup);
         if (this.firstField) this.firstField.focus();
     }

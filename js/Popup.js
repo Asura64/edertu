@@ -47,13 +47,17 @@ export default class Popup
 
     /**
      * @desc Append content to popup
-     * @param {string} content
+     * @param {string|HTMLElement} content
      * @return {Popup}
      */
     withContent(content)
     {
         const contentElt = DOM.createElement('div', 'edertu-popup__content');
-        contentElt.innerText = content;
+        if (content instanceof HTMLElement) {
+            contentElt.appendChild(content);
+        } else {
+            contentElt.innerText = content;
+        }
         this.content.push(contentElt);
         return this;
     }
@@ -176,6 +180,27 @@ export default class Popup
                 'color': '#fff',
                 'background-color': '#0069d9',
                 'border-color': '#0062cc',
+            },
+            '.edertu-popup__image-collection': {
+                'display': 'flex'
+            },
+            '.edertu-popup__image-collection .image': {
+                'padding': '8px',
+                'border-radius': '.25rem',
+                'margin': '4px',
+                'cursor': 'pointer',
+                'display': 'flex',
+                'width': '70px',
+                'height': '70px',
+                'justify-content': 'center',
+                'align-items': 'center',
+                'overflow': 'hidden',
+            },
+            '.edertu-popup__image-collection .image:hover': {
+                'box-shadow': '0 0 3px black',
+            },
+            '.edertu-popup__image-collection .image img': {
+                'width': '100%',
             }
         }
     }

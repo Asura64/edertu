@@ -58,7 +58,10 @@ export default class ImageEditable extends Controls
         this.addControl('image', this._onControlClick.bind(this, 'image'));
 
         //Edit alt
-        this.addControl('alt', this._onControlClick.bind(this, 'alt'));
+        this.addControl('alt', this._onControlClick.bind(this, 'alt'));;
+
+        //Edit alt
+        this.addControl('collection', this._onControlClick.bind(this, 'collection'));
     }
 
     /**
@@ -80,6 +83,9 @@ export default class ImageEditable extends Controls
                     .withButton('Changer', this._onAltChange.bind(this, popup))
                     .display();
                 break;
+            case 'collection':
+                this._getCollection().then(this._showCollection.bind(this));
+                break;
         }
     }
 
@@ -94,7 +100,7 @@ export default class ImageEditable extends Controls
             const formData = new FormData();
             const file = this.inputFile.files[0];
             formData.append('upfile', file);
-            formData.append('imageFolder', this.imageFolder);
+            if (this.imageFolder) formData.append('imageFolder', this.imageFolder);
 
             const request = new Request(this.imageUpload, {method: 'POST', body: formData});
 
@@ -115,7 +121,7 @@ export default class ImageEditable extends Controls
      */
     _updateImage(data)
     {
-        if (!data.success) return;
+        if (!data.url || !data.alt) return;
         if (this.activeEditable instanceof HTMLImageElement) {
             this.activeEditable.src = data.url;
             this.activeEditable.alt = data.alt;
@@ -133,6 +139,47 @@ export default class ImageEditable extends Controls
         if (altInput.value) {
             this.activeEditable.alt = altInput.value;
         }
+        popup.destroy();
+    }
+
+    async _getCollection()
+    {
+        const response = await fetch(this.imageFolder);
+        const htmlResponse = await response.text();
+        const docResponse = new DOMParser().parseFromString(htmlResponse, 'text/html');
+        const links = [].slice.call(docResponse.querySelectorAll('td a'));
+        const images = [];
+        links.forEach(a => {
+            if (a.href.match(/(png|jpe?g)$/)) images.push(a.href);
+        })
+        return images;
+    }
+
+    _showCollection(images)
+    {
+        if (images.length === 0) return;
+        const popup = new Popup().withTitle('Choisir une photo');
+        const collection = DOM.createElement('div', 'edertu-popup__image-collection');
+        images.forEach(image => {
+            image = image.split('/').pop();
+            const imageElt = DOM.createElement('img');
+            imageElt.src = this.imageFolder+image;
+            imageElt.alt = image;
+            const imageContainer = DOM.createElement('div', 'image')
+            imageContainer.addEventListener('click', this._onImageCollectionClick.bind(this, imageElt, popup));
+            imageContainer.appendChild(imageElt);
+            collection.appendChild(imageContainer);
+        });
+        popup.withContent(collection);
+        popup.display();
+    }
+
+    _onImageCollectionClick(image, popup)
+    {
+        this._updateImage({
+            url: image.src,
+            alt: image.alt
+        });
         popup.destroy();
     }
 }

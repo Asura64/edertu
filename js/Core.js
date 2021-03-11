@@ -17,7 +17,7 @@ export default class Core
         this.active = false;
         settings = Object.assign({
             imageUpload: null,
-            imageFolder: '/',
+            imageFolder: null,
             lang: 'en'
         }, settings);
         this.trad = Trad.get(settings.lang);

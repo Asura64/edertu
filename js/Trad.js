@@ -44,6 +44,10 @@ export default class Trad
                         alt: {
                             text: 'Change alt text',
                             symbol: 'Alt',
+                        },
+                        collection: {
+                            text: 'Show images collection',
+                            symbol: './resources/web.png',
                         }
                     }
                 }
@@ -89,6 +93,10 @@ export default class Trad
                         alt: {
                             text: 'Changer le texte alternatif',
                             symbol: 'Alt',
+                        },
+                        collection: {
+                            text: 'Voir toutes les images',
+                            symbol: './resources/web.png',
                         }
                     }
                 }

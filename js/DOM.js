@@ -64,6 +64,15 @@ export default class DOM
         });
     }
 
+    /**
+     * @desc Shortcut method to remove element from DOM
+     * @param {HTMLElement} element
+     */
+    static remove(element)
+    {
+        element.parentNode.removeChild(element);
+    }
+
     static HEAD = {
         /**
          * @desc Append style tag within <head> if not created yet. This tag is used for advanced CSS styling

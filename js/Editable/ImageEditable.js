@@ -165,8 +165,25 @@ export default class ImageEditable extends Controls
             const imageElt = DOM.createElement('img');
             imageElt.src = this.imageFolder+image;
             imageElt.alt = image;
-            const imageContainer = DOM.createElement('div', 'image')
-            imageContainer.addEventListener('click', this._onImageCollectionClick.bind(this, imageElt, popup));
+            const imageContainer = DOM.createElement('div', 'edertu-popup-image')
+            imageElt.addEventListener('click', this._onImageCollectionClick.bind(this, imageElt, popup));
+            const remove = DOM.createElement('div');
+            DOM.addStyles(remove, {
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                backgroundColor: 'white',
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                border: '1px solid #CCC',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            });
+            remove.innerText = 'x';
+            remove.addEventListener('click', this._onImageRemoveClick.bind(this, imageElt, popup));
+            imageContainer.appendChild(remove);
             imageContainer.appendChild(imageElt);
             collection.appendChild(imageContainer);
         });
@@ -181,5 +198,20 @@ export default class ImageEditable extends Controls
             alt: image.alt
         });
         popup.destroy();
+    }
+
+    async _onImageRemoveClick(image, popup)
+    {
+        if (!confirm(this.trad.collection.remove)) return;
+        const request = new Request(image.src, {method: 'DELETE'});
+        const response = await fetch(request);
+        const data = await response.json();
+        if (data.success) {
+            const imagesContainer = image.parentNode.parentNode;
+            DOM.remove(image.parentNode);
+            if (imagesContainer.querySelectorAll('img').length === 0) {
+                popup.destroy();
+            }
+        }
     }
 }

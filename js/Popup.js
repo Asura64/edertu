@@ -184,9 +184,10 @@ export default class Popup
             '.edertu-popup__image-collection': {
                 'display': 'flex'
             },
-            '.edertu-popup__image-collection .image': {
+            '.edertu-popup__image-collection .edertu-popup-image': {
                 'padding': '8px',
                 'border-radius': '.25rem',
+                'position': 'relative',
                 'margin': '4px',
                 'cursor': 'pointer',
                 'display': 'flex',
@@ -196,10 +197,10 @@ export default class Popup
                 'align-items': 'center',
                 'overflow': 'hidden',
             },
-            '.edertu-popup__image-collection .image:hover': {
+            '.edertu-popup__image-collection .edertu-popup-image:hover': {
                 'box-shadow': '0 0 3px black',
             },
-            '.edertu-popup__image-collection .image img': {
+            '.edertu-popup__image-collection .edertu-popup-image img': {
                 'width': '100%',
             }
         }

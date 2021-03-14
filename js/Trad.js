@@ -48,6 +48,7 @@ export default class Trad
                         collection: {
                             text: 'Show images collection',
                             symbol: './resources/web.png',
+                            remove: 'Remove this image from server?',
                         }
                     }
                 }
@@ -97,6 +98,7 @@ export default class Trad
                         collection: {
                             text: 'Voir toutes les images',
                             symbol: './resources/web.png',
+                            remove: 'Supprimer cette image du serveur?',
                         }
                     }
                 }
